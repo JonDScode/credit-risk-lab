@@ -1,0 +1,16 @@
+[
+  {
+    "model": "logistic_regression",
+    "roc_auc": 0.7079,
+    "pr_auc": 0.4942,
+    "ks": 0.3638,
+    "brier": 0.1467
+  },
+  {
+    "model": "xgboost",
+    "roc_auc": 0.7799,
+    "pr_auc": 0.561,
+    "ks": 0.4294,
+    "brier": 0.135
+  }
+]

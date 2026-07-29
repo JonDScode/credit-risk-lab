@@ -1,0 +1,25 @@
+# Datos (se descargan con src/download_data.py — no se versionan)
+data/raw/
+data/processed/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Modelos entrenados
+models/*.pkl
+models/*.json
+
+# Entorno
+.env
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

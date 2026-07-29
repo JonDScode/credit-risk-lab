@@ -1,0 +1,27 @@
+# Core
+pandas>=2.2
+numpy>=1.26
+requests>=2.31
+
+# ML
+scikit-learn>=1.4
+xgboost>=2.0
+
+# Explicabilidad
+shap>=0.45
+
+# Lectura del dataset UCI (.xls)
+xlrd>=2.0
+
+# Visualización
+matplotlib>=3.8
+seaborn>=0.13
+
+# Notebooks
+jupyter>=1.0
+
+# Fases siguientes (descomentar cuando toquen)
+# torch>=2.2          # variante Deep Learning tabular
+# fastapi>=0.110      # API de scoring
+# uvicorn>=0.29
+# streamlit>=1.35     # demo
