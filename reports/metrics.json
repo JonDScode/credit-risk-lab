@@ -12,5 +12,12 @@
     "pr_auc": 0.561,
     "ks": 0.4294,
     "brier": 0.135
+  },
+  {
+    "model": "pytorch_mlp",
+    "roc_auc": 0.7707,
+    "pr_auc": 0.5398,
+    "ks": 0.4036,
+    "brier": 0.1821
   }
 ]

@@ -31,7 +31,10 @@ credit-risk-lab/
 ├── src/
 │   ├── download_data.py    # Descarga y validación del dataset
 │   ├── prepare.py          # Limpieza y features → data/processed/
-│   └── train.py            # Entrenamiento + métricas + SHAP
+│   ├── train.py            # Baselines (logística, XGBoost) + métricas
+│   ├── train_torch.py      # Variante MLP en PyTorch (comparativa DL vs GBM)
+│   ├── explain.py          # SHAP global/local + ejemplos de reason codes
+│   └── reasons.py          # Reason codes deterministas (compartido con la API)
 ├── notebooks/              # EDA y análisis
 ├── app/                    # API FastAPI de scoring (+ tests/ y Dockerfile)
 ├── models/                 # Artefactos entrenados (xgb.json, medians.json)
@@ -55,8 +58,16 @@ python src/explain.py
 |--------|---------|--------|-----|-------|
 | Regresión logística | 0.708 | 0.494 | 0.364 | 0.147 |
 | **XGBoost** | **0.780** | **0.561** | **0.429** | **0.135** |
+| MLP PyTorch (23→128→64→1) | 0.771 | 0.540 | 0.404 | 0.182 |
 
 KS > 0.4 : discriminación de nivel "scorecard fuerte" según el estándar del sector.
+
+**Conclusión de la comparativa DL vs GBM**: el MLP se queda ligeramente por debajo de
+XGBoost en discriminación y claramente peor en calibración (el `pos_weight` usado para
+el desbalance infla las probabilidades) — consistente con la literatura: en tabular
+de este tamaño, gradient boosting sigue siendo el estado del arte, y la variante deep
+solo se justificaría con embeddings de variables categóricas de alta cardinalidad o
+fusión con otras fuentes. Elegir XGBoost aquí no es preferencia: es una decisión medida.
 
 ## Explicabilidad
 
@@ -111,7 +122,7 @@ docker run -p 8000:8000 credit-risk-api
 - [x] Fase 1 — Datos + EDA + baseline XGBoost con métricas honestas (AUC, KS, calibración)
 - [x] Fase 2 — SHAP: explicabilidad global y local, reason codes deterministas
 - [x] Fase 3 — API de scoring (FastAPI + Docker) con endpoint `/score` explicado y testeado
-- [ ] Fase 4 — Variante Deep Learning tabular (PyTorch) y comparativa rigurosa
+- [x] Fase 4 — Variante Deep Learning tabular (PyTorch) y comparativa rigurosa
 - [ ] Fase 5 — Upgrade a Home Credit (multi-tabla, feature engineering serio)
 - [ ] Demo Streamlit + artículo en [el blog](https://www.jonnathanospina.com/pages/blog.html)
 
