@@ -33,7 +33,8 @@ credit-risk-lab/
 │   ├── prepare.py          # Limpieza y features → data/processed/
 │   └── train.py            # Entrenamiento + métricas + SHAP
 ├── notebooks/              # EDA y análisis
-├── app/                    # (fase 3) API FastAPI de scoring
+├── app/                    # API FastAPI de scoring (+ tests/ y Dockerfile)
+├── models/                 # Artefactos entrenados (xgb.json, medians.json)
 ├── reports/figures/        # Gráficas generadas
 └── data/                   # raw/ y processed/ (gitignored)
 ```
@@ -79,11 +80,37 @@ reproducibles ante un regulador — por eso no se generan con un LLM):
 nunca aparecen como motivo de denegación. La dirección de cada razón ("elevado", "reducido")
 se calcula contra la mediana de la cartera, no se asume.
 
+## API de scoring
+
+```bash
+uvicorn app.main:app          # docs interactivas en http://localhost:8000/docs
+pytest tests/ -v              # smoke tests (incluye el contrato de fairness)
+```
+
+```bash
+curl -X POST http://localhost:8000/score -H "Content-Type: application/json" -d '{
+  "LIMIT_BAL": 20000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 1, "AGE": 35,
+  "PAY_1": 3, "PAY_2": 2, "PAY_3": 2, "PAY_4": 2, "PAY_5": 2, "PAY_6": 2,
+  "BILL_AMT1": 20000, "BILL_AMT2": 18000, "BILL_AMT3": 15000,
+  "BILL_AMT4": 12000, "BILL_AMT5": 10000, "BILL_AMT6": 8000,
+  "PAY_AMT1": 0, "PAY_AMT2": 0, "PAY_AMT3": 0,
+  "PAY_AMT4": 0, "PAY_AMT5": 0, "PAY_AMT6": 0
+}'
+# → {"p_default": 0.79, "risk_band": "alto", "reason_codes": [...]}
+```
+
+Con Docker:
+
+```bash
+docker build -t credit-risk-api .
+docker run -p 8000:8000 credit-risk-api
+```
+
 ## Roadmap
 
 - [x] Fase 1 — Datos + EDA + baseline XGBoost con métricas honestas (AUC, KS, calibración)
 - [x] Fase 2 — SHAP: explicabilidad global y local, reason codes deterministas
-- [ ] Fase 3 — API de scoring (FastAPI + Docker) con endpoint `/score` explicado
+- [x] Fase 3 — API de scoring (FastAPI + Docker) con endpoint `/score` explicado y testeado
 - [ ] Fase 4 — Variante Deep Learning tabular (PyTorch) y comparativa rigurosa
 - [ ] Fase 5 — Upgrade a Home Credit (multi-tabla, feature engineering serio)
 - [ ] Demo Streamlit + artículo en [el blog](https://www.jonnathanospina.com/pages/blog.html)

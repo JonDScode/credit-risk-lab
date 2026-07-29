@@ -100,6 +100,8 @@ def main() -> None:
 
     MODELS.mkdir(exist_ok=True)
     xgb.save_model(MODELS / "xgb.json")
+    # Medianas del train: la API las necesita para la dirección de los reason codes
+    X_train.median().to_json(MODELS / "medians.json")
 
     print(json.dumps(results, indent=2))
     print(f"\nfiguras: {REPORTS / 'figures' / 'roc.png'}")

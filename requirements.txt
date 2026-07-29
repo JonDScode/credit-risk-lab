@@ -20,8 +20,14 @@ seaborn>=0.13
 # Notebooks
 jupyter>=1.0
 
+# API (fase 3)
+fastapi>=0.110
+uvicorn>=0.29
+
+# Tests
+pytest>=8.0
+httpx>=0.27
+
 # Fases siguientes (descomentar cuando toquen)
 # torch>=2.2          # variante Deep Learning tabular
-# fastapi>=0.110      # API de scoring
-# uvicorn>=0.29
 # streamlit>=1.35     # demo

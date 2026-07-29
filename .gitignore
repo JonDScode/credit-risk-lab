@@ -11,10 +11,6 @@ venv/
 # Notebooks
 .ipynb_checkpoints/
 
-# Modelos entrenados
-models/*.pkl
-models/*.json
-
 # Entorno
 .env
 
