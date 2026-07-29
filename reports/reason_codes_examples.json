@@ -1,0 +1,55 @@
+{
+  "alto_riesgo": {
+    "p_default": 0.8727,
+    "default_real": 1,
+    "reason_codes": [
+      {
+        "feature": "PAY_1",
+        "reason": "Estado de pago del último mes: 2 mes(es) de retraso",
+        "shap": 1.5334
+      },
+      {
+        "feature": "PAY_2",
+        "reason": "Estado de pago hace 2 meses: 2 mes(es) de retraso",
+        "shap": 0.2592
+      },
+      {
+        "feature": "BILL_AMT1",
+        "reason": "Importe facturado el último mes con patrón de uso atípico (2,500 NT$)",
+        "shap": 0.2152
+      }
+    ]
+  },
+  "riesgo_medio": {
+    "p_default": 0.1477,
+    "default_real": 0,
+    "reason_codes": [
+      {
+        "feature": "BILL_AMT1",
+        "reason": "Importe facturado el último mes elevado (310,403 NT$)",
+        "shap": 0.2741
+      },
+      {
+        "feature": "BILL_AMT2",
+        "reason": "Importe facturado hace 2 meses elevado (315,048 NT$)",
+        "shap": 0.1973
+      },
+      {
+        "feature": "BILL_AMT5",
+        "reason": "Importe facturado hace 5 meses elevado (315,820 NT$)",
+        "shap": 0.1655
+      }
+    ]
+  },
+  "bajo_riesgo": {
+    "p_default": 0.0248,
+    "default_real": 0,
+    "reason_codes": [
+      {
+        "feature": "BILL_AMT6",
+        "reason": "Importe facturado hace 6 meses elevado (59,569 NT$)",
+        "shap": 0.019
+      }
+    ]
+  }
+}

@@ -45,12 +45,44 @@ pip install -r requirements.txt
 python src/download_data.py
 python src/prepare.py
 python src/train.py
+python src/explain.py
 ```
+
+## Resultados (test 20%)
+
+| Modelo | ROC AUC | PR AUC | KS | Brier |
+|--------|---------|--------|-----|-------|
+| Regresión logística | 0.708 | 0.494 | 0.364 | 0.147 |
+| **XGBoost** | **0.780** | **0.561** | **0.429** | **0.135** |
+
+KS > 0.4 : discriminación de nivel "scorecard fuerte" según el estándar del sector.
+
+## Explicabilidad
+
+![SHAP summary](reports/figures/shap_summary.png)
+
+Cada denegación se traduce a **reason codes** deterministas (plantillas sobre SHAP values,
+reproducibles ante un regulador — por eso no se generan con un LLM):
+
+```json
+{
+  "p_default": 0.87,
+  "reason_codes": [
+    "Estado de pago del último mes: 2 mes(es) de retraso",
+    "Estado de pago hace 2 meses: 2 mes(es) de retraso",
+    "Importe facturado el último mes con patrón de uso atípico"
+  ]
+}
+```
+
+**Fairness**: los atributos protegidos o sensibles (`SEX`, `AGE`, `MARRIAGE`, `EDUCATION`)
+nunca aparecen como motivo de denegación. La dirección de cada razón ("elevado", "reducido")
+se calcula contra la mediana de la cartera, no se asume.
 
 ## Roadmap
 
 - [x] Fase 1 — Datos + EDA + baseline XGBoost con métricas honestas (AUC, KS, calibración)
-- [ ] Fase 2 — SHAP: explicabilidad global y local, reason codes en lenguaje natural
+- [x] Fase 2 — SHAP: explicabilidad global y local, reason codes deterministas
 - [ ] Fase 3 — API de scoring (FastAPI + Docker) con endpoint `/score` explicado
 - [ ] Fase 4 — Variante Deep Learning tabular (PyTorch) y comparativa rigurosa
 - [ ] Fase 5 — Upgrade a Home Credit (multi-tabla, feature engineering serio)
