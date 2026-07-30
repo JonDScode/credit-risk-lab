@@ -19,10 +19,12 @@ financiera. Un modelo que predice bien no basta: la normativa (EBA, AI Act) exig
 
 | Fase | Dataset | Tamaño |
 |------|---------|--------|
-| Actual | [UCI — Default of Credit Card Clients](https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients) (Taiwán, 2005) | 30.000 clientes, 23 variables |
-| Próxima | [Home Credit Default Risk](https://www.kaggle.com/competitions/home-credit-default-risk) (Kaggle) | 307.000 préstamos, multi-tabla |
+| 1–4 | [UCI — Default of Credit Card Clients](https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients) (Taiwán, 2005) | 30.000 clientes, 23 variables |
+| 5 | [Home Credit Default Risk](https://www.kaggle.com/competitions/home-credit-default-risk) (Kaggle) | 307.511 préstamos, 7 tablas |
 
-Los datos **no se versionan**: `python src/download_data.py` los descarga y deja en `data/raw/`.
+Los datos **no se versionan**: `python src/download_data.py` descarga el UCI; para Home
+Credit hace falta el [CLI de Kaggle](https://www.kaggle.com/docs/api) configurado y
+`kaggle competitions download -c home-credit-default-risk -p data/raw/homecredit`.
 
 ## Estructura
 
@@ -68,6 +70,23 @@ el desbalance infla las probabilidades) — consistente con la literatura: en ta
 de este tamaño, gradient boosting sigue siendo el estado del arte, y la variante deep
 solo se justificaría con embeddings de variables categóricas de alta cardinalidad o
 fusión con otras fuentes. Elegir XGBoost aquí no es preferencia: es una decisión medida.
+
+## Home Credit — la liga grande (fase 5)
+
+Mismo protocolo sobre el benchmark estándar del sector: **307.511 solicitudes** reales
+y **7 tablas relacionales** (buró externo, créditos previos, pago de cuotas, saldos
+mensuales de POS y tarjeta) agregadas en ~80 features curadas con lectura de negocio
+([`src/features_homecredit.py`](src/features_homecredit.py)).
+
+| Dataset | Modelo | ROC AUC | KS | Brier |
+|---------|--------|---------|-----|-------|
+| Home Credit (61k test) | XGBoost + features multi-tabla | **0.783** | **0.429** | 0.066 |
+
+Referencia: los ganadores de la competición de Kaggle alcanzaron ~0.80 con ensembles
+masivos; un single model con features interpretables en 0.783 es un resultado sólido.
+Las features más importantes son las que un analista de riesgo esperaría: scores de
+buró externo (`EXT_SOURCE_*`), utilización de tarjeta, retraso medio en cuotas y
+ratio crédito/bien financiado — el modelo aprende lo que el negocio ya sabe, y lo mide.
 
 ## Explicabilidad
 
@@ -123,7 +142,7 @@ docker run -p 8000:8000 credit-risk-api
 - [x] Fase 2 — SHAP: explicabilidad global y local, reason codes deterministas
 - [x] Fase 3 — API de scoring (FastAPI + Docker) con endpoint `/score` explicado y testeado
 - [x] Fase 4 — Variante Deep Learning tabular (PyTorch) y comparativa rigurosa
-- [ ] Fase 5 — Upgrade a Home Credit (multi-tabla, feature engineering serio)
+- [x] Fase 5 — Home Credit: feature engineering multi-tabla (7 tablas → 80 features) y AUC 0.783
 - [ ] Demo Streamlit + artículo en [el blog](https://www.jonnathanospina.com/pages/blog.html)
 
 ---

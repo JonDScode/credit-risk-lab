@@ -1,0 +1,7 @@
+{
+  "model": "xgboost_homecredit",
+  "roc_auc": 0.783,
+  "pr_auc": 0.2771,
+  "ks": 0.4287,
+  "brier": 0.0661
+}
