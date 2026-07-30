@@ -1,35 +1,13 @@
-# Core
+# Runtime: API, demo Streamlit y pipeline básico
+# (deps de desarrollo/entrenamiento pesadas -> requirements-dev.txt)
 pandas>=2.2
 numpy>=1.26
 requests>=2.31
-
-# ML
 scikit-learn>=1.4
 xgboost>=2.0
-
-# Explicabilidad
 shap>=0.45
-
-# Lectura del dataset UCI (.xls)
 xlrd>=2.0
-
-# Visualización
 matplotlib>=3.8
-seaborn>=0.13
-
-# Notebooks
-jupyter>=1.0
-
-# API (fase 3)
 fastapi>=0.110
 uvicorn>=0.29
-
-# Tests
-pytest>=8.0
-httpx>=0.27
-
-# Fases siguientes (descomentar cuando toquen)
-# torch>=2.2          # variante Deep Learning tabular
-# streamlit>=1.35     # demo
-
-torch>=2.2
+streamlit>=1.35
