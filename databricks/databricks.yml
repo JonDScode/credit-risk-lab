@@ -1,0 +1,43 @@
+bundle:
+  name: credit_risk_lab
+
+variables:
+  catalog:
+    default: workspace
+  schema:
+    default: credit_risk_lab
+
+resources:
+  jobs:
+    train_job:
+      name: credit-risk-train-register
+      performance_target: STANDARD
+      tags:
+        aidevkit_project: ai-dev-kit
+      tasks:
+        - task_key: train
+          notebook_task:
+            notebook_path: 01_train_register.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+
+    score_job:
+      name: credit-risk-batch-score
+      performance_target: STANDARD
+      tags:
+        aidevkit_project: ai-dev-kit
+      tasks:
+        - task_key: score
+          notebook_task:
+            notebook_path: 02_batch_score.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://dbc-cd6ae8c2-6ae0.cloud.databricks.com
