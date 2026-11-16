@@ -39,6 +39,7 @@ credit-risk-lab/
 │   └── reasons.py          # Reason codes deterministas (compartido con la API)
 ├── notebooks/              # EDA y análisis
 ├── app/                    # API FastAPI de scoring (+ tests/ y Dockerfile)
+├── databricks/             # Versión lakehouse: bundle, notebooks de entrenamiento y puntuación
 ├── models/                 # Artefactos entrenados (xgb.json, medians.json)
 ├── reports/figures/        # Gráficas generadas
 └── data/                   # raw/ y processed/ (gitignored)
@@ -136,6 +137,35 @@ docker build -t credit-risk-api .
 docker run -p 8000:8000 credit-risk-api
 ```
 
+## Versión Databricks (fase 6)
+
+El mismo problema llevado a un lakehouse, sin rehacer el modelo: la API de AWS sirve, Databricks
+entrena, versiona y puntúa por lotes. Corre en **Databricks Free Edition** (serverless, uso no
+comercial): es una demo, no un despliegue de producción.
+
+`credit_raw` → `credit_clean` → XGBoost con MLflow → modelo en Unity Catalog (alias `champion`) →
+tabla `scores` con la versión del modelo en cada fila. Los motivos SHAP reutilizan `reasons.py`.
+
+| Métrica (test 20%) | Databricks | Local |
+|--------------------|------------|-------|
+| ROC AUC | 0.780 | 0.780 |
+| KS | 0.434 | 0.429 |
+| Brier | 0.135 | 0.135 |
+
+Dos jobs serverless definidos con Declarative Automation Bundles
+([`databricks/databricks.yml`](databricks/databricks.yml)):
+
+```bash
+cd databricks
+databricks bundle deploy -t dev --profile <perfil>
+databricks bundle run train_job -t dev --profile <perfil>   # ingesta, MLflow, registro, SHAP
+databricks bundle run score_job -t dev --profile <perfil>   # puntuación por lotes → scores
+```
+
+Lección de reproducibilidad: Delta no garantiza el orden de las filas y la partición estratificada
+depende de él; sin ordenar por `ID` la primera ejecución dio un AUC engañoso (0.796). Detalle y plan
+en [`docs/databricks.md`](docs/databricks.md).
+
 ## Roadmap
 
 - [x] Fase 1 — Datos + EDA + baseline XGBoost con métricas honestas (AUC, KS, calibración)
@@ -143,6 +173,7 @@ docker run -p 8000:8000 credit-risk-api
 - [x] Fase 3 — API de scoring (FastAPI + Docker) con endpoint `/score` explicado y testeado
 - [x] Fase 4 — Variante Deep Learning tabular (PyTorch) y comparativa rigurosa
 - [x] Fase 5 — Home Credit: feature engineering multi-tabla (7 tablas → 80 features) y AUC 0.783
+- [x] Fase 6 — Versión Databricks: tablas Delta, MLflow, registro de modelo y puntuación por lotes en un job
 - [ ] Demo Streamlit + artículo en [el blog](https://www.jonnathanospina.com/pages/blog.html)
 
 ---
